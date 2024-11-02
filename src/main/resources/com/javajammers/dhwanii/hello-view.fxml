@@ -1,16 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.media.*?>
 
-<?import javafx.scene.control.Button?>
-<VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.javajammers.dhwanii.HelloController">
-    <padding>
-        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
-    </padding>
-
-    <Label fx:id="welcomeText"/>
-    <Button text="Hello!" onAction="#onHelloButtonClick"/>
-</VBox>
+<BorderPane fx:id="bpane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="322.0" prefWidth="373.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.javajammers.dhwanii.PlayerController">
+    <bottom>
+        <VBox prefHeight="75.0" prefWidth="374.0" BorderPane.alignment="CENTER">
+            <HBox prefHeight="100.0" prefWidth="200.0">
+                <Slider prefHeight="14.0" prefWidth="350.0" HBox.hgrow="ALWAYS" />
+            </HBox>
+            <HBox alignment="CENTER" prefHeight="138.0" prefWidth="374.0" spacing="10.0">
+                <Button fx:id="selectFile" mnemonicParsing="false" onAction="#btnSelectMedia" text="SelectFile" />
+                <Button fx:id="play" mnemonicParsing="false" onAction="#btnPlay" text="Play" />
+                <Button fx:id="stop" mnemonicParsing="false" onAction="#btnStop" text="Stop" />
+                <Label text="Duration 00:00" />
+            </HBox>
+        </VBox>
+    </bottom>
+   <center>
+        <MediaView fx:id="mediaView" BorderPane.alignment="CENTER" />
+   </center>
+</BorderPane>

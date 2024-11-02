@@ -1,3 +1,4 @@
+# Gradle files
 .gradle
 build/
 !gradle/wrapper/gradle-wrapper.jar
@@ -15,6 +16,9 @@ build/
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
+
+# Ignore all .class files
+*.class
 
 ### Eclipse ###
 .apt_generated
@@ -40,3 +44,28 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+
+### Application Specific ###
+# Ignore Android APK files
+*.apk
+*.ap_
+# Ignore Android generated files
+*.dex
+*.jks
+*.keystore
+
+### Temporary files ###
+*.log
+*.tmp
+*.temp
+*.hprof
+
+### Misc ###
+# Ignore lock files
+*.lock
+
+# Ignore other IDE specific files
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/dictionaries
+.idea/vcs.xml
