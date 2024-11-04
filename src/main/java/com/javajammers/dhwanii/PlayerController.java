@@ -5,6 +5,9 @@ import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
@@ -22,7 +25,6 @@ public class PlayerController {
 
     private Media media;
     private MediaPlayer mediaPlayer;
-
     private boolean isPlaying = false;
 
     @FXML
@@ -60,30 +62,62 @@ public class PlayerController {
 
         if (selectedFile != null) {
             String fileUri = selectedFile.toURI().toString();
-            media = new Media(fileUri);
+            loadMedia(fileUri);
+        }
+    }
 
-            // Stop current player if it exists before creating a new one
-            if (mediaPlayer != null) {
-                mediaPlayer.stop();
-            }
+    private void loadMedia(String fileUri) {
+        if (mediaPlayer != null) {
+            mediaPlayer.stop();
+            mediaPlayer.dispose();
+        }
 
-            mediaPlayer = new MediaPlayer(media);
-            mediaView.setMediaPlayer(mediaPlayer);
+        media = new Media(fileUri);
+        mediaPlayer = new MediaPlayer(media);
+        mediaView.setMediaPlayer(mediaPlayer);
 
-            Scene scene = mediaView.getScene();
-            mediaView.fitHeightProperty().bind(scene.heightProperty());
-            mediaView.fitWidthProperty().bind(scene.widthProperty());
+        Scene scene = mediaView.getScene();
+        mediaView.fitHeightProperty().bind(scene.heightProperty());
+        mediaView.fitWidthProperty().bind(scene.widthProperty());
 
-            mediaPlayer.setOnEndOfMedia(() -> {
-                play.setText("Play");
-                mediaPlayer.stop();
-                mediaPlayer.play();
-            });
+        mediaPlayer.setOnEndOfMedia(() -> {
+            play.setText("Play");
+            isPlaying = false;
+            label.setText("Stopped");
+        });
 
-            mediaPlayer.setAutoPlay(true);
+        mediaPlayer.setOnError(() -> {
+            label.setText("Error: " + mediaPlayer.getError().getMessage());
+        });
+
+        mediaPlayer.setOnReady(() -> {
+            mediaPlayer.play();
             isPlaying = true;
             play.setText("Pause");
             label.setText("Playing");
+        });
+    }
+
+    @FXML
+    public void handleDragOver(DragEvent event) {
+        if (event.getGestureSource() != mediaView && event.getDragboard().hasFiles()) {
+            event.acceptTransferModes(TransferMode.ANY);
         }
+        event.consume();
+    }
+
+    @FXML
+    public void handleDragDropped(DragEvent event) {
+        Dragboard db = event.getDragboard();
+        boolean success = false;
+
+        if (db.hasFiles()) {
+            File file = db.getFiles().get(0); // Get the first file
+            String fileUri = file.toURI().toString();
+            loadMedia(fileUri);
+            success = true;
+        }
+        event.setDropCompleted(success);
+        event.consume();
     }
 }

@@ -11,14 +11,16 @@
                 <Slider prefHeight="14.0" prefWidth="350.0" HBox.hgrow="ALWAYS" />
             </HBox>
             <HBox alignment="CENTER" prefHeight="138.0" prefWidth="374.0" spacing="10.0">
-                <Button fx:id="selectFile" mnemonicParsing="false" onAction="#btnSelectMedia" text="SelectFile" />
+                <Button fx:id="selectFile" mnemonicParsing="false" onAction="#btnSelectMedia" text="Select File" />
                 <Button fx:id="play" mnemonicParsing="false" onAction="#btnPlay" text="Play" />
                 <Button fx:id="stop" mnemonicParsing="false" onAction="#btnStop" text="Stop" />
                 <Label text="Duration 00:00" />
             </HBox>
         </VBox>
     </bottom>
-   <center>
-        <MediaView fx:id="mediaView" BorderPane.alignment="CENTER" />
-   </center>
+    <center>
+        <MediaView fx:id="mediaView" BorderPane.alignment="CENTER"
+                   onDragOver="#handleDragOver"
+                   onDragDropped="#handleDragDropped" />
+    </center>
 </BorderPane>
