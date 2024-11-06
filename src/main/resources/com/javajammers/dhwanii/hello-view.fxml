@@ -5,21 +5,43 @@
 <?import javafx.scene.media.*?>
 
 <BorderPane fx:id="root" stylesheets="@style.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.javajammers.dhwanii.PlayerController">
+
+    <!-- Top: App Name -->
+    <top>
+        <HBox alignment="CENTER" styleClass="app-header">
+            <Label text="Dhwanii Music Player" styleClass="app-title" />
+        </HBox>
+    </top>
+
+    <!-- Center: MediaView to display media content -->
     <center>
         <MediaView fx:id="mediaView" styleClass="media-view" />
     </center>
+
+    <!-- Right: Playlist with drag-and-drop support -->
+    <right>
+        <VBox fx:id="playlistBox" spacing="10" styleClass="playlist-box">
+            <Label text="Playlist" styleClass="playlist-title" />
+            <ListView fx:id="playlistView" styleClass="playlist-view" />
+            <!-- This ListView will display dropped files -->
+        </VBox>
+    </right>
+
+    <!-- Bottom: Controls for playback and volume -->
     <bottom>
         <VBox fx:id="controlBar" spacing="10" styleClass="control-bar">
-            <Slider fx:id="progressBar" minWidth="300" styleClass="volume-slider" HBox.hgrow="ALWAYS" />
-            <HBox spacing="10">
+            <!-- Progress slider to track media progress -->
+            <Slider fx:id="progressBar" minWidth="300" styleClass="progress-slider" HBox.hgrow="ALWAYS" />
+            <HBox spacing="10" alignment="CENTER">
+                <!-- Playback control buttons -->
                 <Button fx:id="selectFileButton" onAction="#handleSelectFile" styleClass="control-button" text="Open File" />
                 <Button fx:id="playPauseButton" onAction="#handlePlayPause" styleClass="control-button" text="Play/Pause" />
                 <Button fx:id="stopButton" onAction="#handleStop" styleClass="control-button" text="Stop" />
-                <VBox>
-                    <children>
-                        <Label alignment="CENTER" text="Volume" />
-                        <Slider fx:id="volumeSlider" max="1" styleClass="volume-slider" value="0.5" />
-                    </children>
+
+                <!-- Volume control with label and slider -->
+                <VBox spacing="5" alignment="CENTER">
+                    <Label text="Volume" />
+                    <Slider fx:id="volumeSlider" max="1" value="0.5" styleClass="volume-slider" />
                 </VBox>
             </HBox>
         </VBox>
