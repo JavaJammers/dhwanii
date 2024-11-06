@@ -1,0 +1,84 @@
+/* dhwanii-style.css */
+
+/* General Background */
+.root {
+    -fx-background-color: #2e3440;
+    -fx-padding: 10px;
+}
+
+/* MediaView styling */
+#mediaView {
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 15, 0.5, 0, 0);
+    -fx-background-color: #3b4252;
+}
+
+/* Playlist styling */
+.playlist-label {
+    -fx-text-fill: #eceff4;
+    -fx-font-size: 16px;
+    -fx-padding: 5px;
+    -fx-background-color: #4c566a;
+    -fx-alignment: center;
+}
+
+.playlist-view {
+    -fx-background-color: #3b4252;
+    -fx-border-color: #4c566a;
+    -fx-border-width: 1;
+    -fx-border-radius: 5;
+    -fx-padding: 5;
+}
+
+/* Button styling */
+.button {
+    -fx-background-color: #88c0d0;
+    -fx-text-fill: #2e3440;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.25), 5, 0.3, 0, 1);
+}
+
+.button:hover {
+    -fx-background-color: #81a1c1;
+}
+
+/* Label styling */
+.label {
+    -fx-text-fill: #d8dee9;
+    -fx-font-size: 14px;
+}
+
+/* Slider styling */
+.slider {
+    -fx-background-color: #3b4252;
+    -fx-control-inner-background: #4c566a;
+}
+
+#seekSlider .thumb {
+    -fx-background-color: #88c0d0;
+}
+
+#seekSlider .track {
+    -fx-background-color: #4c566a;
+}
+
+/* HBox & VBox alignment */
+.hbox, .vbox {
+    -fx-alignment: center;
+    -fx-spacing: 10px;
+}
+.icon-button {
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+    -fx-padding: 5px;
+}
+
+.icon-button:hover {
+    -fx-background-color: #4c566a;
+    -fx-background-radius: 5;
+}
+
+.duration-label {
+    -fx-text-fill: #d8dee9;
+    -fx-font-size: 14px;
+}

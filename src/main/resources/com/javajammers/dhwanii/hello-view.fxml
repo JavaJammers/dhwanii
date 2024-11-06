@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.media.*?>
+<?import javafx.scene.text.*?>
 
-<BorderPane fx:id="bpane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="322.0" prefWidth="373.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.javajammers.dhwanii.PlayerController">
+<BorderPane fx:id="bpane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="437.0" prefWidth="508.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.javajammers.dhwanii.PlayerController">
     <bottom>
-        <VBox prefHeight="75.0" prefWidth="374.0" BorderPane.alignment="CENTER">
+        <VBox prefHeight="75.0" prefWidth="374.0" style="-fx-border-color: gray; -fx-border-width: 1;" BorderPane.alignment="CENTER">
             <HBox prefHeight="100.0" prefWidth="200.0">
                 <Slider prefHeight="14.0" prefWidth="350.0" HBox.hgrow="ALWAYS" />
             </HBox>
@@ -19,8 +21,44 @@
         </VBox>
     </bottom>
     <center>
-        <MediaView fx:id="mediaView" BorderPane.alignment="CENTER"
-                   onDragOver="#handleDragOver"
-                   onDragDropped="#handleDragDropped" />
+        <StackPane style="-fx-border-color: gray; -fx-border-width: 1;">
+            <MediaView fx:id="mediaView" fitHeight="300.0" fitWidth="300.0" onDragDropped="#handleDragDropped" onDragOver="#handleDragOver" opacity="0.51" preserveRatio="true" />
+         <BorderPane.margin>
+            <Insets right="5.0" top="10.0" />
+         </BorderPane.margin>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+        </StackPane>
     </center>
+    <right>
+        <Pane fx:id="rightPane" prefWidth="150.0" style="-fx-border-color: gray; -fx-border-width: 1;" BorderPane.alignment="CENTER">
+            <VBox fx:id="playlistContainer" prefHeight="300.0" prefWidth="150.0">
+                <children>
+               <Label text="Playist" textAlignment="CENTER" textFill="#cc5d5d">
+                  <VBox.margin>
+                     <Insets left="20.0" top="10.0" />
+                  </VBox.margin>
+                  <font>
+                     <Font name="System Bold Italic" size="12.0" />
+                  </font>
+               </Label>
+                    <ListView fx:id="playlistView" prefWidth="150.0">
+                  <VBox.margin>
+                     <Insets top="10.0" />
+                  </VBox.margin></ListView>
+                </children>
+            </VBox>
+         <BorderPane.margin>
+            <Insets top="10.0" />
+         </BorderPane.margin>
+        </Pane>
+    </right>
+   <top>
+      <Label text="DHWANII" textAlignment="CENTER" textFill="#de3535" BorderPane.alignment="CENTER">
+         <font>
+            <Font name="Calibri Bold" size="14.0" />
+         </font>
+      </Label>
+   </top>
 </BorderPane>
