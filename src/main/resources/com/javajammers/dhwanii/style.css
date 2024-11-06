@@ -1,0 +1,18 @@
+.media-view {
+    -fx-background-color: red;
+}
+
+.control-bar {
+    -fx-padding: 10;
+    -fx-background-color: #ffffff;
+    -fx-alignment: center;
+}
+
+.control-button {
+    -fx-background-radius: 50;
+    -fx-padding: 10;
+}
+
+.volume-slider {
+    -fx-padding: 0 10;
+}

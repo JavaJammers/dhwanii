@@ -1,16 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.media.*?>
+<?import javafx.scene.text.*?>
 
-<?import javafx.scene.control.Button?>
-<VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.javajammers.dhwanii.HelloController">
-    <padding>
-        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
-    </padding>
-
-    <Label fx:id="welcomeText"/>
-    <Button text="Hello!" onAction="#onHelloButtonClick"/>
-</VBox>
+<BorderPane fx:id="root" stylesheets="@style.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.javajammers.dhwanii.PlayerController">
+    <top>
+        <HBox alignment="CENTER" styleClass="app-header">
+            <Label styleClass="app-title" text="Dhwanii" textFill="#941010">
+            <font>
+               <Font name="System Bold Italic" size="14.0" />
+            </font></Label>
+        </HBox>
+    </top>
+    <right>
+        <VBox fx:id="playlistBox" prefHeight="242.0" prefWidth="150.0" spacing="10" styleClass="playlist-box">
+            <Label styleClass="playlist-title" text="Playlist" textFill="#941010">
+            <font>
+               <Font name="System Italic" size="12.0" />
+            </font></Label>
+            <ListView fx:id="playlistView" prefHeight="270.0" prefWidth="135.0" styleClass="playlist-view">
+            <padding>
+               <Insets right="10.0" />
+            </padding></ListView>
+         <padding>
+            <Insets right="5.0" />
+         </padding>
+        </VBox>
+    </right>
+    <center>
+        <MediaView fx:id="mediaView" styleClass="media-view" />
+    </center>
+    <bottom>
+        <VBox fx:id="controlBar" spacing="10" styleClass="control-bar">
+            <Slider fx:id="progressBar" minWidth="300" styleClass="volume-slider" HBox.hgrow="ALWAYS" />
+            <HBox spacing="10">
+                <Button fx:id="selectFileButton" onAction="#handleSelectFile" styleClass="control-button" text="Open File" />
+                <Button fx:id="playPauseButton" onAction="#handlePlayPause" styleClass="control-button" text="Play/Pause" />
+                <Button fx:id="stopButton" onAction="#handleStop" styleClass="control-button" text="Stop" />
+                <VBox>
+                    <children>
+                        <Label alignment="CENTER" text="Volume" />
+                        <Slider fx:id="volumeSlider" max="1" styleClass="volume-slider" value="0.5" />
+                    </children>
+                </VBox>
+            </HBox>
+        </VBox>
+    </bottom>
+</BorderPane>
