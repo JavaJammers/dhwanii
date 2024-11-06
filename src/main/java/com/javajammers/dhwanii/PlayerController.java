@@ -8,10 +8,13 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.Slider;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
@@ -22,181 +25,124 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PlayerController {
+
+    @FXML
+    private BorderPane root;
+
+    @FXML
+    private VBox controlBar;
+
+    @FXML
+    private Button selectFileButton;
+
+    @FXML
+    private Button playPauseButton;
+
+    @FXML
+    private Button stopButton;
+
     @FXML
     private MediaView mediaView;
-    @FXML
-    private Button play, selectFile, stop;
-    @FXML
-    private Label label;
 
-    private Media media;
+    @FXML
+    private Slider progressBar;
+
+    @FXML
+    private Slider volumeSlider;
+
     private MediaPlayer mediaPlayer;
-    private boolean isPlaying = false;
 
-    @FXML
-    private Pane rightPane;
+    private final FileChooser fileChooser;
 
-    @FXML
-    private ListView<String> playlistView;
-
-    // ArrayList to store the dropped files
-    private final ArrayList<File> filePlaylist = new ArrayList<>();
+    public PlayerController() {
+        fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Video Files", "*.mp4", "*.m4v", "*.mkv", "*.mp3"));
+    }
 
     public void initialize() {
-        setupDragAndDrop();
-    }
-    private void setupDragAndDrop() {
-        // Set up drag-over event
-        rightPane.setOnDragOver(event -> {
-            if (event.getGestureSource() != rightPane && event.getDragboard().hasFiles()) {
-                event.acceptTransferModes(TransferMode.COPY);
+        root.setOnDragOver(this::handleDragOver);
+        root.setOnDragDropped(this::handleDragDropped);
+
+        progressBar.setOnMousePressed(event -> {
+            if (mediaPlayer != null) {
+                mediaPlayer.seek(mediaPlayer.getTotalDuration().multiply(progressBar.getValue() / progressBar.getMax()));
             }
-            event.consume();
         });
 
-        // Set up drag-drop event
-        rightPane.setOnDragDropped(this::handleDragDropped1);
+        progressBar.setOnMouseDragged(event -> {
+            if (mediaPlayer != null) {
+                mediaPlayer.seek(mediaPlayer.getTotalDuration().multiply(progressBar.getValue() / progressBar.getMax()));
+            }
+        });
     }
 
-    private void handleDragDropped1(DragEvent event) {
+    @FXML
+    private void handleSelectFile() {
+        File file = fileChooser.showOpenDialog(selectFileButton.getScene().getWindow());
+        if (file != null) {
+            playMedia(file);
+        }
+    }
+
+    @FXML
+    private void handlePlayPause() {
+        if (mediaPlayer != null) {
+            if (mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING) {
+                mediaPlayer.pause();
+            } else {
+                mediaPlayer.play();
+            }
+        }
+    }
+
+    @FXML
+    private void handleStop() {
+        if (mediaPlayer != null) {
+            mediaPlayer.stop();
+        }
+    }
+
+    private void handleDragOver(DragEvent event) {
+        if (event.getGestureSource() != root && event.getDragboard().hasFiles()) {
+            event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+        }
+        event.consume();
+    }
+
+    private void handleDragDropped(DragEvent event) {
         Dragboard db = event.getDragboard();
         boolean success = false;
         if (db.hasFiles()) {
-            List<File> droppedFiles = db.getFiles();
-
-            for (File file : droppedFiles) {
-                // If it's a directory, get all files inside it
-                if (file.isDirectory()) {
-                    addFilesFromDirectory(file);
-                } else {
-                    filePlaylist.add(file); // Add the file to the playlist
-                }
-            }
-
-            // Update the ListView with file names
-            updatePlaylistView();
-
+            File file = db.getFiles().get(0);
+            playMedia(file);
             success = true;
         }
         event.setDropCompleted(success);
         event.consume();
     }
 
-    // Recursively add files from a directory
-    private void addFilesFromDirectory(File directory) {
-        File[] files = directory.listFiles();
-        if (files != null) {
-            for (File file : files) {
-                if (file.isDirectory()) {
-                    addFilesFromDirectory(file); // Recursively add files from subdirectories
-                } else {
-                    filePlaylist.add(file); // Add file to playlist
-                }
-            }
-        }
-    }
-
-    // Method to update ListView with the names of files in filePlaylist
-    private void updatePlaylistView() {
-        ObservableList<String> fileNames = FXCollections.observableArrayList();
-        for (File file : filePlaylist) {
-            fileNames.add(file.getName());
-        }
-        playlistView.setItems(fileNames); // Set the ListView with file names
-    }
-
-
-    @FXML
-    void btnPlay(ActionEvent event) {
-        if (mediaPlayer != null) {
-            if (!isPlaying) {
-                mediaPlayer.play();
-                play.setText("Pause");
-                isPlaying = true;
-                label.setText("Playing");
-            } else {
-                mediaPlayer.pause();
-                play.setText("Play");
-                isPlaying = false;
-                label.setText("Paused");
-            }
-        }
-    }
-
-    @FXML
-    void btnStop(ActionEvent event) {
+    private void playMedia(File file) {
         if (mediaPlayer != null) {
             mediaPlayer.stop();
-            play.setText("Play");
-            isPlaying = false;
-            label.setText("Stopped");
         }
-    }
-
-    @FXML
-    void btnSelectMedia(ActionEvent event) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Select File");
-        File selectedFile = fileChooser.showOpenDialog(null);
-
-        if (selectedFile != null) {
-            String fileUri = selectedFile.toURI().toString();
-            loadMedia(fileUri);
-        }
-    }
-
-    private void loadMedia(String fileUri) {
-        if (mediaPlayer != null) {
-            mediaPlayer.stop();
-            mediaPlayer.dispose();
-        }
-
-        media = new Media(fileUri);
+        Media media = new Media(file.toURI().toString());
         mediaPlayer = new MediaPlayer(media);
         mediaView.setMediaPlayer(mediaPlayer);
+        mediaView.fitWidthProperty().bind(root.widthProperty());
+        mediaView.fitHeightProperty().bind(root.heightProperty().subtract(100));
 
-        Scene scene = mediaView.getScene();
-        mediaView.fitHeightProperty().bind(scene.heightProperty());
-        mediaView.fitWidthProperty().bind(scene.widthProperty());
-
-        mediaPlayer.setOnEndOfMedia(() -> {
-            play.setText("Play");
-            isPlaying = false;
-            label.setText("Stopped");
-        });
-
-        mediaPlayer.setOnError(() -> {
-            label.setText("Error: " + mediaPlayer.getError().getMessage());
+        mediaPlayer.currentTimeProperty().addListener((obs, oldTime, newTime) -> {
+            progressBar.setValue(newTime.toSeconds());
         });
 
         mediaPlayer.setOnReady(() -> {
-            mediaPlayer.play();
-            isPlaying = true;
-            play.setText("Pause");
-            label.setText("Playing");
+            progressBar.setMax(mediaPlayer.getTotalDuration().toSeconds());
         });
-    }
 
-    @FXML
-    public void handleDragOver(DragEvent event) {
-        if (event.getGestureSource() != mediaView && event.getDragboard().hasFiles()) {
-            event.acceptTransferModes(TransferMode.ANY);
-        }
-        event.consume();
-    }
+        volumeSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
+            mediaPlayer.setVolume(newVal.doubleValue());
+        });
 
-    @FXML
-    public void handleDragDropped(DragEvent event) {
-        Dragboard db = event.getDragboard();
-        boolean success = false;
-
-        if (db.hasFiles()) {
-            File file = db.getFiles().get(0); // Get the first file
-            String fileUri = file.toURI().toString();
-            loadMedia(fileUri);
-            success = true;
-        }
-        event.setDropCompleted(success);
-        event.consume();
+        mediaPlayer.play();
     }
 }

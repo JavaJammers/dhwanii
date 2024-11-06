@@ -12,8 +12,8 @@ public class PlayerWindow extends Application {
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(PlayerWindow.class.getResource("hello-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
-//        stage.setWidth(540);   // Set your desired width
-//        stage.setHeight(470);
+        stage.setWidth(540);   // Set your desired width
+        stage.setHeight(470);
         stage.setTitle("Hello!");
         stage.setScene(scene);
         stage.show();

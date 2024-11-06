@@ -1,64 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.media.*?>
-<?import javafx.scene.text.*?>
 
-<BorderPane fx:id="bpane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="437.0" prefWidth="508.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.javajammers.dhwanii.PlayerController">
+<BorderPane fx:id="root" stylesheets="@style.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.javajammers.dhwanii.PlayerController">
+    <center>
+        <MediaView fx:id="mediaView" styleClass="media-view" />
+    </center>
     <bottom>
-        <VBox prefHeight="75.0" prefWidth="374.0" style="-fx-border-color: gray; -fx-border-width: 1;" BorderPane.alignment="CENTER">
-            <HBox prefHeight="100.0" prefWidth="200.0">
-                <Slider prefHeight="14.0" prefWidth="350.0" HBox.hgrow="ALWAYS" />
-            </HBox>
-            <HBox alignment="CENTER" prefHeight="138.0" prefWidth="374.0" spacing="10.0">
-                <Button fx:id="selectFile" mnemonicParsing="false" onAction="#btnSelectMedia" text="Select File" />
-                <Button fx:id="play" mnemonicParsing="false" onAction="#btnPlay" text="Play" />
-                <Button fx:id="stop" mnemonicParsing="false" onAction="#btnStop" text="Stop" />
-                <Label text="Duration 00:00" />
+        <VBox fx:id="controlBar" spacing="10" styleClass="control-bar">
+            <Slider fx:id="progressBar" minWidth="300" styleClass="volume-slider" HBox.hgrow="ALWAYS" />
+            <HBox spacing="10">
+                <Button fx:id="selectFileButton" onAction="#handleSelectFile" styleClass="control-button" text="Open File" />
+                <Button fx:id="playPauseButton" onAction="#handlePlayPause" styleClass="control-button" text="Play/Pause" />
+                <Button fx:id="stopButton" onAction="#handleStop" styleClass="control-button" text="Stop" />
+                <VBox>
+                    <children>
+                        <Label alignment="CENTER" text="Volume" />
+                        <Slider fx:id="volumeSlider" max="1" styleClass="volume-slider" value="0.5" />
+                    </children>
+                </VBox>
             </HBox>
         </VBox>
     </bottom>
-    <center>
-        <StackPane style="-fx-border-color: gray; -fx-border-width: 1;">
-            <MediaView fx:id="mediaView" fitHeight="300.0" fitWidth="300.0" onDragDropped="#handleDragDropped" onDragOver="#handleDragOver" opacity="0.51" preserveRatio="true" />
-         <BorderPane.margin>
-            <Insets right="5.0" top="10.0" />
-         </BorderPane.margin>
-         <padding>
-            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-         </padding>
-        </StackPane>
-    </center>
-    <right>
-        <Pane fx:id="rightPane" prefWidth="150.0" style="-fx-border-color: gray; -fx-border-width: 1;" BorderPane.alignment="CENTER">
-            <VBox fx:id="playlistContainer" prefHeight="300.0" prefWidth="150.0">
-                <children>
-               <Label text="Playist" textAlignment="CENTER" textFill="#cc5d5d">
-                  <VBox.margin>
-                     <Insets left="20.0" top="10.0" />
-                  </VBox.margin>
-                  <font>
-                     <Font name="System Bold Italic" size="12.0" />
-                  </font>
-               </Label>
-                    <ListView fx:id="playlistView" prefWidth="150.0">
-                  <VBox.margin>
-                     <Insets top="10.0" />
-                  </VBox.margin></ListView>
-                </children>
-            </VBox>
-         <BorderPane.margin>
-            <Insets top="10.0" />
-         </BorderPane.margin>
-        </Pane>
-    </right>
-   <top>
-      <Label text="DHWANII" textAlignment="CENTER" textFill="#de3535" BorderPane.alignment="CENTER">
-         <font>
-            <Font name="Calibri Bold" size="14.0" />
-         </font>
-      </Label>
-   </top>
 </BorderPane>
