@@ -14,7 +14,7 @@ public class PlayerWindow extends Application {
         Scene scene = new Scene(fxmlLoader.load());
         stage.setWidth(540);   // Set your desired width
         stage.setHeight(470);
-        stage.setTitle("The Media Player!");
+        stage.setTitle("The Media Player! ");
         stage.setScene(scene);
         stage.show();
     }
