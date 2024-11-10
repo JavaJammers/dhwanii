@@ -128,7 +128,16 @@ public class PlayerController {
 
         playlistView.getSelectionModel().selectedItemProperty().addListener((obs, oldFile, newFile) -> {
             if (newFile != null) {
-                playMedia(newFile);
+
+            }
+        });
+
+        playlistView.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2) {
+                File selectedFile = playlistView.getSelectionModel().getSelectedItem();
+                if (selectedFile != null) {
+                    playMedia(selectedFile);
+                }
             }
         });
 
