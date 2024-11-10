@@ -3,13 +3,19 @@ package com.javajammers.dhwanii;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.geometry.Insets;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -24,6 +30,9 @@ public class PlayerController {
 
     @FXML
     private BorderPane root;
+
+    @FXML
+    private HBox topBox;
 
     @FXML
     private VBox controlBar;
@@ -210,9 +219,6 @@ public class PlayerController {
         }
         Media media = new Media(file.toURI().toString());
         mediaPlayer = new MediaPlayer(media);
-        mediaView.setMediaPlayer(mediaPlayer);
-        mediaView.fitWidthProperty().bind(root.widthProperty());
-        mediaView.fitHeightProperty().bind(root.heightProperty().subtract(100));
 
         mediaPlayer.currentTimeProperty().addListener((obs, oldTime, newTime) -> {
             progressBar.setValue(newTime.toSeconds());
@@ -223,26 +229,48 @@ public class PlayerController {
             progressBar.setMax(mediaPlayer.getTotalDuration().toSeconds());
             totalTimeLabel.setText(formatTime(mediaPlayer.getTotalDuration()));
 
-            // Display metadata if available
-            if (media.getMetadata().containsKey("artist")) {
-                artistLabel.setText("Artist: " + media.getMetadata().get("artist").toString());
-            } else {
+            String fileName = file.getName().toLowerCase();
+            if (fileName.endsWith(".mp3") || fileName.endsWith(".m4a") || fileName.endsWith(".flac")) {
+                // Handle audio metadata
+                if (media.getMetadata().containsKey("artist")) {
+                    artistLabel.setText("Artist: " + media.getMetadata().get("artist").toString());
+                } else {
+                    artistLabel.setText("");
+                }
+
+                if (media.getMetadata().containsKey("album")) {
+                    albumLabel.setText("Album: " + media.getMetadata().get("album").toString());
+                } else {
+                    albumLabel.setText("");
+                }
+
+                if (media.getMetadata().containsKey("image")) {
+                    albumCover.setImage((Image) media.getMetadata().get("image"));
+                } else {
+                    albumCover.setImage(null);
+                }
+
+                metadataBox.setVisible(true);
+                root.setCenter(metadataBox); // Display metadata box in center
+            } else if (fileName.endsWith(".mp4") || fileName.endsWith(".m4v") || fileName.endsWith(".mkv")) {
+                // Handle video file
+                metadataBox.setVisible(false);
                 artistLabel.setText("");
-            }
-
-            if (media.getMetadata().containsKey("album")) {
-                albumLabel.setText("Album: " + media.getMetadata().get("album").toString());
-            } else {
                 albumLabel.setText("");
-            }
-
-            if (media.getMetadata().containsKey("image")) {
-                albumCover.setImage((Image) media.getMetadata().get("image"));
-            } else {
                 albumCover.setImage(null);
-            }
 
-            metadataBox.setVisible(media.getMetadata().containsKey("artist") || media.getMetadata().containsKey("album") || media.getMetadata().containsKey("image"));
+                if (root.getCenter() != null) {
+                    root.setCenter(null); // Remove any existing content from center
+                }
+                mediaView = new MediaView(mediaPlayer);
+                mediaView.setPreserveRatio(true);
+                mediaView.fitWidthProperty().bind(root.widthProperty().subtract(20)); // Slightly smaller width
+                mediaView.fitHeightProperty().bind(root.heightProperty().subtract(controlBar.getHeight() + 40)); // Adjusted height to include padding for control bar
+
+                BorderPane.setMargin(mediaView, new Insets(10)); // Add padding around MediaView
+
+                root.setCenter(mediaView); // Add MediaView to the center
+            }
         });
 
         volumeSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
@@ -251,6 +279,9 @@ public class PlayerController {
 
         mediaPlayer.play();
     }
+
+
+
 
     private String formatTime(Duration time) {
         int minutes = (int) time.toMinutes();
