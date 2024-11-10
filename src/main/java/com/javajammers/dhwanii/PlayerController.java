@@ -3,9 +3,9 @@ package com.javajammers.dhwanii;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
-import javafx.scene.control.Slider;
+import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
@@ -15,8 +15,10 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.stage.FileChooser;
+import javafx.util.Duration;
 
 import java.io.File;
+import java.util.Collections;
 
 public class PlayerController {
 
@@ -42,6 +44,9 @@ public class PlayerController {
     private Button previousButton;
 
     @FXML
+    private Button shuffleButton;
+
+    @FXML
     private MediaView mediaView;
 
     @FXML
@@ -52,6 +57,24 @@ public class PlayerController {
 
     @FXML
     private ListView<File> playlistView;
+
+    @FXML
+    private Label currentTimeLabel;
+
+    @FXML
+    private Label totalTimeLabel;
+
+    @FXML
+    private VBox metadataBox;
+
+    @FXML
+    private ImageView albumCover;
+
+    @FXML
+    private Label artistLabel;
+
+    @FXML
+    private Label albumLabel;
 
     private MediaPlayer mediaPlayer;
     private ObservableList<File> playlist;
@@ -68,6 +91,18 @@ public class PlayerController {
         root.setOnDragOver(this::handleDragOver);
         root.setOnDragDropped(this::handleDragDropped);
         playlistView.setItems(playlist);
+
+        playlistView.setCellFactory(param -> new ListCell<File>() {
+            @Override
+            protected void updateItem(File item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item.getName());
+                }
+            }
+        });
 
         progressBar.setOnMousePressed(event -> {
             if (mediaPlayer != null) {
@@ -130,6 +165,11 @@ public class PlayerController {
         }
     }
 
+    @FXML
+    private void handleShuffle() {
+        Collections.shuffle(playlist);
+    }
+
     private void handleDragOver(DragEvent event) {
         if (event.getGestureSource() != root && event.getDragboard().hasFiles()) {
             event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
@@ -176,10 +216,33 @@ public class PlayerController {
 
         mediaPlayer.currentTimeProperty().addListener((obs, oldTime, newTime) -> {
             progressBar.setValue(newTime.toSeconds());
+            currentTimeLabel.setText(formatTime(newTime));
         });
 
         mediaPlayer.setOnReady(() -> {
             progressBar.setMax(mediaPlayer.getTotalDuration().toSeconds());
+            totalTimeLabel.setText(formatTime(mediaPlayer.getTotalDuration()));
+
+            // Display metadata if available
+            if (media.getMetadata().containsKey("artist")) {
+                artistLabel.setText("Artist: " + media.getMetadata().get("artist").toString());
+            } else {
+                artistLabel.setText("");
+            }
+
+            if (media.getMetadata().containsKey("album")) {
+                albumLabel.setText("Album: " + media.getMetadata().get("album").toString());
+            } else {
+                albumLabel.setText("");
+            }
+
+            if (media.getMetadata().containsKey("image")) {
+                albumCover.setImage((Image) media.getMetadata().get("image"));
+            } else {
+                albumCover.setImage(null);
+            }
+
+            metadataBox.setVisible(media.getMetadata().containsKey("artist") || media.getMetadata().containsKey("album") || media.getMetadata().containsKey("image"));
         });
 
         volumeSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
@@ -187,5 +250,11 @@ public class PlayerController {
         });
 
         mediaPlayer.play();
+    }
+
+    private String formatTime(Duration time) {
+        int minutes = (int) time.toMinutes();
+        int seconds = (int) time.toSeconds() % 60;
+        return String.format("%02d:%02d", minutes, seconds);
     }
 }
