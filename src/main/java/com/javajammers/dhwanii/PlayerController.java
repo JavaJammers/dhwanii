@@ -13,6 +13,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -130,7 +131,17 @@ public class PlayerController {
                 playMedia(newFile);
             }
         });
+
+        playlistView.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.DELETE) {
+                File selectedFile = playlistView.getSelectionModel().getSelectedItem();
+                if (selectedFile != null) {
+                    playlist.remove(selectedFile);
+                }
+            }
+        });
     }
+
 
     @FXML
     private void handleSelectFile() {
@@ -279,9 +290,6 @@ public class PlayerController {
 
         mediaPlayer.play();
     }
-
-
-
 
     private String formatTime(Duration time) {
         int minutes = (int) time.toMinutes();
