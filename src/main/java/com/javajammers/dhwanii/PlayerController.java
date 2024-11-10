@@ -2,18 +2,14 @@ package com.javajammers.dhwanii;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -21,8 +17,6 @@ import javafx.scene.media.MediaView;
 import javafx.stage.FileChooser;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 public class PlayerController {
 
@@ -42,6 +36,12 @@ public class PlayerController {
     private Button stopButton;
 
     @FXML
+    private Button nextButton;
+
+    @FXML
+    private Button previousButton;
+
+    @FXML
     private MediaView mediaView;
 
     @FXML
@@ -50,18 +50,24 @@ public class PlayerController {
     @FXML
     private Slider volumeSlider;
 
+    @FXML
+    private ListView<File> playlistView;
+
     private MediaPlayer mediaPlayer;
+    private ObservableList<File> playlist;
 
     private final FileChooser fileChooser;
 
     public PlayerController() {
         fileChooser = new FileChooser();
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Video Files", "*.mp4", "*.m4v", "*.mkv", "*.mp3"));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Video and Audio Files", "*.mp4", "*.m4v", "*.mkv", "*.mp3"));
+        playlist = FXCollections.observableArrayList();
     }
 
     public void initialize() {
         root.setOnDragOver(this::handleDragOver);
         root.setOnDragDropped(this::handleDragDropped);
+        playlistView.setItems(playlist);
 
         progressBar.setOnMousePressed(event -> {
             if (mediaPlayer != null) {
@@ -74,13 +80,19 @@ public class PlayerController {
                 mediaPlayer.seek(mediaPlayer.getTotalDuration().multiply(progressBar.getValue() / progressBar.getMax()));
             }
         });
+
+        playlistView.getSelectionModel().selectedItemProperty().addListener((obs, oldFile, newFile) -> {
+            if (newFile != null) {
+                playMedia(newFile);
+            }
+        });
     }
 
     @FXML
     private void handleSelectFile() {
         File file = fileChooser.showOpenDialog(selectFileButton.getScene().getWindow());
         if (file != null) {
-            playMedia(file);
+            addFileToPlaylist(file);
         }
     }
 
@@ -102,6 +114,22 @@ public class PlayerController {
         }
     }
 
+    @FXML
+    private void handleNext() {
+        int currentIndex = playlistView.getSelectionModel().getSelectedIndex();
+        if (currentIndex < playlist.size() - 1) {
+            playlistView.getSelectionModel().select(currentIndex + 1);
+        }
+    }
+
+    @FXML
+    private void handlePrevious() {
+        int currentIndex = playlistView.getSelectionModel().getSelectedIndex();
+        if (currentIndex > 0) {
+            playlistView.getSelectionModel().select(currentIndex - 1);
+        }
+    }
+
     private void handleDragOver(DragEvent event) {
         if (event.getGestureSource() != root && event.getDragboard().hasFiles()) {
             event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
@@ -113,12 +141,27 @@ public class PlayerController {
         Dragboard db = event.getDragboard();
         boolean success = false;
         if (db.hasFiles()) {
-            File file = db.getFiles().get(0);
-            playMedia(file);
-            success = true;
+            for (File file : db.getFiles()) {
+                if (isValidMediaFile(file)) {
+                    addFileToPlaylist(file);
+                    success = true;
+                }
+            }
         }
         event.setDropCompleted(success);
         event.consume();
+    }
+
+    private boolean isValidMediaFile(File file) {
+        String fileName = file.getName().toLowerCase();
+        return fileName.endsWith(".mp4") || fileName.endsWith(".m4v") || fileName.endsWith(".mkv") || fileName.endsWith(".mp3");
+    }
+
+    private void addFileToPlaylist(File file) {
+        playlist.add(file);
+        if (mediaPlayer == null) {
+            playMedia(file);
+        }
     }
 
     private void playMedia(File file) {
